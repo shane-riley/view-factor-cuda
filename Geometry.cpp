@@ -17,3 +17,5 @@ void Geometry::freeMemory() {
 double Geometry::areaOf(double *triangle) {
 	// TODO: Implement me
 }
+
+int Geometry::size() { return this->arraySize; }

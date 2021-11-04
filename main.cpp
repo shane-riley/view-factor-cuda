@@ -1,6 +1,7 @@
 ﻿#include "globals.h"
 #include "STLReader.h"
 #include "Geometry.h"
+#include "MTCalculator.h"
 
 int main(int argc, char **args)
 {
@@ -28,7 +29,7 @@ int main(int argc, char **args)
 
 	// Specify GPU's
 	// TODO: Make the GPU target an input
-	vector<int> targetDevices = { 0,1 };
+	vector<int> targetDevices = { 0 };
 	int numDevices = targetDevices.size();
 
 
@@ -43,5 +44,18 @@ int main(int argc, char **args)
 	Geometry blockerGeometry(blockerReader);
 
 	// Create an MTCalculator per device
+	// TODO: Actually implement more than one GPU and have them get executed concurrently
+	// For now, just do one 
+	MTCalculator MT0(emitterGeometry,
+		receiverGeometry,
+		blockerGeometry,
+		0,
+		0,
+		emitterGeometry.size());
+
+	// Run the MTCalculator
+	double vf = MT0.calculateVF();
+
+	cout << "VF: " << vf << endl;
 
 }

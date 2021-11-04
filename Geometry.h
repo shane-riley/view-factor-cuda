@@ -12,7 +12,7 @@ class Geometry
 public:
 
 	// Size
-	int size;
+	int arraySize;
 
 	// NOTE: It might be possible to use std::vectors for these arrays and then copy them over--later problem
 	// size-length pointers
@@ -51,6 +51,9 @@ public:
 
 	// areaOf method (same as Aparapi)
 	static double areaOf(double *triangle);
+
+	// Size method
+	int size();
 };
 
 #endif  /* GEOMETRY_H_ */

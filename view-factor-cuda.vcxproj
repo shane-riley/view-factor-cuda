@@ -79,15 +79,21 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="kernels.cu" />
     <CudaCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="GPUGeometry.h" />
+    <ClInclude Include="kernels.cuh" />
+    <ClInclude Include="MTCalculator.h" />
     <ClInclude Include="STLReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="GPUGeometry.cpp" />
+    <ClCompile Include="MTCalculator.cpp" />
     <ClCompile Include="STLReader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
