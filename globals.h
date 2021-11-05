@@ -7,6 +7,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cuda.h>
+#include <cublas.h>
+#include <cublas_v2.h>
 
 // This sets the namespace to std, which shortens many of our stdlib type and function references
 using namespace std;
