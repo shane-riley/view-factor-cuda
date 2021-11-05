@@ -44,7 +44,7 @@ public:
 	// Someday we will make a constructor that takes a TEGDefinition as an input
 
 	// initWithSize method (allocates all arrays as size-length and full of zeroes)
-	void initWithSize();
+	void initWithSize(int newSize);
 
 	// freeMemory method (releases memory from allocation, will error if memory was never allocated in the first place)
 	void freeMemory();
