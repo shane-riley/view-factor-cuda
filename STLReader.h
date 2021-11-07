@@ -18,12 +18,21 @@ public:
 	// Constructor
 	STLReader(string ffilename);
 
+	// Open file
+	void openFile();
+
+	// Reset file
+	void resetFile();
+
+	// Close file
+	void closeFile();
+
 	// Get total number of facets
 	int getNumFacets();
 
 	// Get next Facet (normal vector and 3 vertices)
 	// NOTE: Follows Aparapi format
-	void getNextFacet(double* normal, double* vertices);
+	vector<double3> getNextFacet();
 };
 
 #endif  /* STL_READER_H_ */

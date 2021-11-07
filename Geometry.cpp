@@ -1,9 +1,9 @@
 #include "Geometry.h"
 
 Geometry::Geometry(STLReader &reader) {
-	// TODO: Implement me
-	// Return NULL if NULL
-	//initWithSize();
+	
+	// Open file
+
 }
 
 void Geometry::initWithSize(int newSize) {

@@ -86,6 +86,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="GPUGeometry.h" />
+    <ClInclude Include="helper_cuda.h" />
     <ClInclude Include="kernels.cuh" />
     <ClInclude Include="MTCalculator.h" />
     <ClInclude Include="STLReader.h" />
@@ -93,7 +94,7 @@
   <ItemGroup>
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GPUGeometry.cpp" />
-    <ClCompile Include="MTCalculator.cpp" />
+    <ClCompile Include="MTCalculator.cu" />
     <ClCompile Include="STLReader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
