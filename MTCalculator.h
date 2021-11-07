@@ -18,6 +18,9 @@ public:
 	GPUGeometry gpuEmitter;
 	GPUGeometry gpuReceiver;
 	GPUGeometry gpuBlocker;
+	
+	// Emitter-length
+	double* result;
 
 	// Constructor
 	MTCalculator(Geometry &cpuEmitter, Geometry &cpureceiver, Geometry & cpublocker, int deviceNum, int emitterBegin, int emitterEnd);
@@ -26,6 +29,9 @@ public:
 	double calculateVF();
 
 	// Wrapper methods for gpu kernels
+	double cudaEvaluateEmitter(int e);
+
+	//double MTCalculator::cudaSumVector(int e, double* result, double* total);
 };
 
 #endif  /* MT_CALC_H_ */

@@ -38,6 +38,8 @@ public:
 
 	double* area;
 
+	double* result;
+
 	// GPUGeometry constructor from regular Geometry
 	GPUGeometry(Geometry &geom);
 
