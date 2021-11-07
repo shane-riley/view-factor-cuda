@@ -56,7 +56,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <Include>F:\tools\Include\10.0.10240.0\ucrt</Include>
+      <Include>"C:\ProgramData\NVIDIA Corporation\CUDA Samples\v11.5\common\inc"</Include>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,7 +86,6 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="GPUGeometry.h" />
-    <ClInclude Include="helper_cuda.h" />
     <ClInclude Include="kernels.cuh" />
     <ClInclude Include="MTCalculator.h" />
     <ClInclude Include="STLReader.h" />
