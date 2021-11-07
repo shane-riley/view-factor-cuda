@@ -50,7 +50,7 @@ public:
 	void freeMemory();
 
 	// areaOf method (same as Aparapi)
-	static double areaOf(double *triangle);
+	static double areaOf(vector<double3> triangle);
 
 	// Size method
 	int size();

@@ -2,6 +2,11 @@
 #include "STLReader.h"
 #include "Geometry.h"
 #include "MTCalculator.h"
+#include <thread>
+#include <iostream>
+#include <vector>
+
+
 
 int main(int argc, char **args)
 {
@@ -41,11 +46,27 @@ int main(int argc, char **args)
 	// Create Geometries
 	Geometry emitterGeometry(emitterReader);
 	Geometry receiverGeometry(receiverReader);
-	Geometry blockerGeometry(blockerReader);
+	Geometry blockerGeometry(blockerReader);	
 
 	// Create an MTCalculator per device
 	// TODO: Actually implement more than one GPU and have them get executed concurrently
 	// For now, just do one 
+
+	int deviceCount;
+	cudaGetDeviceCount(&deviceCount);
+	cout << "Number of available devices is: " << deviceCount;
+	
+
+	std::vector <std::thread> threads;
+
+	for (int i = 0; i < deviceCount; i++) {
+		std::thread seg();
+		threads.push_back(std::move(seg));
+	}
+	for (auto& seg : threads) {
+		seg.join();
+	}
+	void create()
 	MTCalculator MT0(emitterGeometry,
 		receiverGeometry,
 		blockerGeometry,
