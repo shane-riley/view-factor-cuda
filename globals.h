@@ -11,7 +11,7 @@
 #include <cuda.h>
 #include <cublas.h>
 #include <cublas_v2.h>
-#include <helper_cuda.h>
+#include "helper_cuda.h"
 
 // This sets the namespace to std, which shortens many of our stdlib type and function references
 using namespace std;
@@ -22,5 +22,6 @@ const static int Y = 1;
 const static int Z = 2;
 const string OUT_FILE = "output.txt";
 const static int BLOCKSIZE = 32;
+const static double PI = 3.14159265359;
 
 #endif  /* GLOBALS_H_ */  

@@ -12,11 +12,21 @@ MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry
 }
 
 double MTCalculator::calculateVF() {
-	checkCudaErrors(cudaMalloc((void**)&result, gpuEmitter.arraySize * sizeof(double)));
+
+	// Get number of emitters evaluated
+	int numEmitters = stopEmitter - startEmitter;
+
+	// Get number of receivers evaluated
+	int numReceivers = gpuReceiver.arraySize;
+
+	long numResults = numEmitters * numReceivers;
+
+	checkCudaErrors(cudaMalloc((void**)&result, numResults * sizeof(double)));
+	// Result emitter-major
 
 	// Loop through assigned emitters
 	for (int e = startEmitter; e < stopEmitter; e++) {
-		cudaEvaluateEmitter(e);
+		cudaEvaluateEmitter(e, startEmitter, numEmitters);
 	}
 
 	// Sum all of the results
@@ -27,11 +37,11 @@ double MTCalculator::calculateVF() {
 
 	// Sum on CPU for now
 	// TODO: Implement a GPU-based block reduction
-	double* cpuResult = (double*)malloc(gpuEmitter.arraySize * sizeof(double));
-	checkCudaErrors(cudaMemcpy(cpuResult, result, gpuEmitter.arraySize * sizeof(double), cudaMemcpyDeviceToHost));
+	double* cpuResult = (double*)malloc(numResults * sizeof(double));
+	checkCudaErrors(cudaMemcpy(cpuResult, result, numResults * sizeof(double), cudaMemcpyDeviceToHost));
 	double cpuTotal;
-	for (int e = startEmitter; e < stopEmitter; e++) {
-		cpuTotal += cpuResult[e];
+	for (int res = 0; res < numResults; res++) {
+		cpuTotal += cpuResult[res];
 	}
 	free(cpuResult);
 
@@ -41,8 +51,9 @@ double MTCalculator::calculateVF() {
 
 // Put kernel wrappers down here
 
-double MTCalculator::cudaEvaluateEmitter(int e) {
-	evaluateEmitter<<<1, gpuReceiver.arraySize>>> (e, gpuEmitter, gpuReceiver, gpuBlocker, result);
+double MTCalculator::cudaEvaluateEmitter(int e, int start, int num) {
+	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
+	evaluateEmitter<<<nblocks, BLOCKSIZE>>> (e, start, num, gpuEmitter, gpuReceiver, gpuBlocker, result);
 }
 
 //double MTCalculator::cudaSumVector(int e, double* result, double* total) {
