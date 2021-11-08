@@ -1,5 +1,7 @@
 #include "GPUGeometry.h"
 
+GPUGeometry::GPUGeometry() {}
+
 GPUGeometry::GPUGeometry(Geometry& geom) {
 
 	arraySize = geom.arraySize;

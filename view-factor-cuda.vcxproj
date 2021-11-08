@@ -60,7 +60,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <Include>F:\tools\Include\10.0.10240.0\ucrt</Include>
+      <Include>F:\tools\Include\10.0.10240.0\ucrt; "C:\ProgramData\NVIDIA Corporation\CUDA Samples\v11.5\common\inc"</Include>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,20 +84,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="kernels.cu" />
-    <CudaCompile Include="main.cpp" />
+    <CudaCompile Include="MTCalculator.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="GPUGeometry.h" />
     <ClInclude Include="kernels.cuh" />
-    <ClInclude Include="MTCalculator.h" />
+    <ClInclude Include="MTCalculator.cuh" />
     <ClInclude Include="STLReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GPUGeometry.cpp" />
-    <ClCompile Include="MTCalculator.cu" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="STLReader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

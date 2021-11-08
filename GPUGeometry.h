@@ -43,6 +43,8 @@ public:
 	// GPUGeometry constructor from regular Geometry
 	GPUGeometry(Geometry &geom);
 
+	GPUGeometry();
+
 	// Free memory
 	void freeMemory();
 

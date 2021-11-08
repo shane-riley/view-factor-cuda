@@ -29,7 +29,9 @@ public:
 	double calculateVF();
 
 	// Wrapper methods for gpu kernels
-	double cudaEvaluateEmitter(int e, int start, int num);
+	void cudaEvaluateEmitter(int e, int start, int num);
+
+	void freeMemory();
 
 	//double MTCalculator::cudaSumVector(int e, double* result, double* total);
 };

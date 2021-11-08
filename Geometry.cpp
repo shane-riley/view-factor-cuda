@@ -30,7 +30,7 @@ Geometry::Geometry(STLReader &reader) {
 		centerY[i] = (info[1].y + info[2].y + info[3].y) / 3;
 		centerZ[i] = (info[1].z + info[2].z + info[3].z) / 3;
 	
-		area = areaof(info);
+		area[i] = areaOf(info);
 	}
 
 }

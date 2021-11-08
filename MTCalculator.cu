@@ -1,4 +1,4 @@
-#include "MTCalculator.h"
+#include "MTCalculator.cuh"
 #include "kernels.cuh"
 
 MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry& cpuBlocker, int ddeviceNum, int emitterBegin, int emitterEnd) {
@@ -9,6 +9,16 @@ MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry
 	deviceNum = ddeviceNum;
 	startEmitter = emitterBegin;
 	stopEmitter = emitterEnd;
+
+	int numResults = (stopEmitter - startEmitter) * gpuReceiver.arraySize;
+	checkCudaErrors(cudaMalloc((void**)&result, numResults * sizeof(double)));
+}
+
+void MTCalculator::freeMemory() {
+	gpuEmitter.freeMemory();
+	gpuReceiver.freeMemory();
+	gpuBlocker.freeMemory();
+	checkCudaErrors(cudaFree(result));
 }
 
 double MTCalculator::calculateVF() {
@@ -20,9 +30,6 @@ double MTCalculator::calculateVF() {
 	int numReceivers = gpuReceiver.arraySize;
 
 	long numResults = numEmitters * numReceivers;
-
-	checkCudaErrors(cudaMalloc((void**)&result, numResults * sizeof(double)));
-	// Result emitter-major
 
 	// Loop through assigned emitters
 	for (int e = startEmitter; e < stopEmitter; e++) {
@@ -39,7 +46,7 @@ double MTCalculator::calculateVF() {
 	// TODO: Implement a GPU-based block reduction
 	double* cpuResult = (double*)malloc(numResults * sizeof(double));
 	checkCudaErrors(cudaMemcpy(cpuResult, result, numResults * sizeof(double), cudaMemcpyDeviceToHost));
-	double cpuTotal;
+	double cpuTotal = 0.0;
 	for (int res = 0; res < numResults; res++) {
 		cpuTotal += cpuResult[res];
 	}
@@ -51,7 +58,7 @@ double MTCalculator::calculateVF() {
 
 // Put kernel wrappers down here
 
-double MTCalculator::cudaEvaluateEmitter(int e, int start, int num) {
+void MTCalculator::cudaEvaluateEmitter(int e, int start, int num) {
 	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
 	evaluateEmitter<<<nblocks, BLOCKSIZE>>> (e, start, num, gpuEmitter, gpuReceiver, gpuBlocker, result);
 }

@@ -1,22 +1,32 @@
 ﻿#include "globals.h"
 #include "STLReader.h"
 #include "Geometry.h"
-#include "MTCalculator.h"
+#include "MTCalculator.cuh"
 #include <thread>
 #include <iostream>
 #include <vector>
 
+void runMT(Geometry &emitterGeometry, Geometry &receiverGeometry, Geometry &blockerGeometry, int i, int start, int end, double *vfs) {
+	MTCalculator MT(emitterGeometry,
+		receiverGeometry,
+		blockerGeometry,
+		i,
+		start,
+		end);
+	double vf = MT.calculateVF();
+	MT.freeMemory();
+	vfs[i] = vf;
+}
 
-
-int main(int argc, char **args)
+int main(int argc, char** args)
 {
 	// Arguments
 	// 1: Emitting Geometry
 	// 2: Receiving Geometry
 	// 3: Blocking Geometry (Optional)
-	
+
 	// Check arguments
-	if (argc < 3 || argc > 4) {
+	if (argc < 4 || argc > 4) {
 		// Wrong number of inputs
 		cout << "Usage: vfcuda [Emitter STL] [Receiving STL] (Blocking STL)" << endl;
 		exit(0);
@@ -24,19 +34,9 @@ int main(int argc, char **args)
 
 	string emitterFilename = string(args[1]);
 	string receiverFilename = string(args[2]);
-	string blockerFilename = "";
-	bool is_blocker = false;
-
-	if (argc == 4) {
-		blockerFilename = string(args[3]);
-		is_blocker = true;
-	}
+	string blockerFilename = string(args[3]);
 
 	// Specify GPU's
-	// TODO: Make the GPU target an input
-	vector<int> targetDevices = { 0 };
-	int numDevices = targetDevices.size();
-
 
 	// Create STL readers
 	STLReader emitterReader(emitterFilename);
@@ -46,7 +46,7 @@ int main(int argc, char **args)
 	// Create Geometries
 	Geometry emitterGeometry(emitterReader);
 	Geometry receiverGeometry(receiverReader);
-	Geometry blockerGeometry(blockerReader);	
+	Geometry blockerGeometry(blockerReader);
 
 	// Create an MTCalculator per device
 	// TODO: Actually implement more than one GPU and have them get executed concurrently
@@ -55,27 +55,23 @@ int main(int argc, char **args)
 	int deviceCount;
 	cudaGetDeviceCount(&deviceCount);
 	cout << "Number of available devices is: " << deviceCount;
-	
 
-	std::vector <std::thread> threads;
+
+	vector<thread> threads;
+	double* vfs = (double*)calloc(deviceCount, sizeof(double));
 
 	for (int i = 0; i < deviceCount; i++) {
-		std::thread seg();
-		threads.push_back(std::move(seg));
+		int start = 0;
+		int end = emitterGeometry.size();
+		threads.push_back(thread(runMT, emitterGeometry, receiverGeometry, blockerGeometry, i, start, end, vfs));
 	}
 	for (auto& seg : threads) {
 		seg.join();
 	}
-	void create()
-	MTCalculator MT0(emitterGeometry,
-		receiverGeometry,
-		blockerGeometry,
-		0,
-		0,
-		emitterGeometry.size());
-
-	// Run the MTCalculator
-	double vf = MT0.calculateVF();
+	double vf = 0.0;
+	for (int i = 0; i < deviceCount; i++) {
+		vf += vfs[i];
+	}
 
 	cout << "VF: " << vf << endl;
 
