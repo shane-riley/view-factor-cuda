@@ -36,23 +36,23 @@ GPUGeometry::GPUGeometry(Geometry& geom) {
 	checkCudaErrors(cudaMemcpy(normalY, geom.normalY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 	checkCudaErrors(cudaMemcpy(normalZ, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 
-	checkCudaErrors(cudaMemcpy(vertexAX, geom.normalX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(vertexAY, geom.normalY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(vertexAZ, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(vertexAX, geom.vertexAX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(vertexAY, geom.vertexAY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(vertexAZ, geom.vertexAZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 
-	checkCudaErrors(cudaMemcpy(edgeBAX, geom.normalX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(edgeBAY, geom.normalY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(edgeBAZ, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeBAX, geom.edgeBAX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeBAY, geom.edgeBAY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeBAZ, geom.edgeBAZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 
-	checkCudaErrors(cudaMemcpy(edgeCAX, geom.normalX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(edgeCAY, geom.normalY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(edgeCAZ, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeCAX, geom.edgeCAX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeCAY, geom.edgeCAY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(edgeCAZ, geom.edgeCAZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 
-	checkCudaErrors(cudaMemcpy(centerX, geom.normalX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(centerY, geom.normalY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
-	checkCudaErrors(cudaMemcpy(centerZ, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(centerX, geom.centerX, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(centerY, geom.centerY, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(centerZ, geom.centerZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 
-	checkCudaErrors(cudaMemcpy(area, geom.normalZ, arraySize * sizeof(double), cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(area, geom.area, arraySize * sizeof(double), cudaMemcpyHostToDevice));
 }
 
 void GPUGeometry::freeMemory() {
@@ -72,7 +72,7 @@ void GPUGeometry::freeMemory() {
 
 	checkCudaErrors(cudaFree(edgeCAX));
 	checkCudaErrors(cudaFree(edgeCAY));
-	checkCudaErrors(cudaFree(edgeBAZ));
+	checkCudaErrors(cudaFree(edgeCAZ));
 
 	checkCudaErrors(cudaFree(centerX));
 	checkCudaErrors(cudaFree(centerY));

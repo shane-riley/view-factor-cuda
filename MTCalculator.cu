@@ -47,6 +47,8 @@ double MTCalculator::calculateVF() {
 	double* cpuResult = (double*)malloc(numResults * sizeof(double));
 	checkCudaErrors(cudaMemcpy(cpuResult, result, numResults * sizeof(double), cudaMemcpyDeviceToHost));
 	double cpuTotal = 0.0;
+
+
 	for (int res = 0; res < numResults; res++) {
 		cpuTotal += cpuResult[res];
 	}

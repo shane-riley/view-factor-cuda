@@ -16,9 +16,9 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 					r.z * b.edgeCAX[bi] - r.x * b.edgeCAZ[bi],
 					r.x * b.edgeCAY[bi] - r.y * b.edgeCAX[bi] };
 
-	double interDist = -1;
+	double interDist = -1.0;
 
-	double det = b.edgeCAX[bi] * pvec.x
+	double det = b.edgeBAX[bi] * pvec.x
 		+ b.edgeBAY[bi] * pvec.y
 		+ b.edgeBAZ[bi] * pvec.z;
 
@@ -61,7 +61,7 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 __global__ void evaluateEmitter(int e, int startEmitter, int numEmitters, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
 	size_t r = blockIdx.x * blockDim.x + threadIdx.x;
 
-	int add = (e - startEmitter) * numEmitters + r;
+	int add = (e - startEmitter) + numEmitters * r;
 
 	if (r < gpuReceiver.arraySize)
 	{

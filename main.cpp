@@ -26,21 +26,21 @@ int main(int argc, char** args)
 	// 3: Blocking Geometry (Optional)
 
 	// Check arguments
-	if (argc < 4 || argc > 4) {
+	//if (argc < 4 || argc > 4) {
 		// Wrong number of inputs
-		cout << "Usage: vfcuda [Emitter STL] [Receiving STL] (Blocking STL)" << endl;
-		exit(0);
-	}
+		//cout << "Usage: vfcuda [Emitter STL] [Receiving STL] (Blocking STL)" << endl;
+		//exit(0);
+	//}
 
-	string emitterFilename = string(args[1]);
-	string receiverFilename = string(args[2]);
-	string blockerFilename = string(args[3]);
+	string emitterFilename = "F:/Shane/view-factor-cuda/test/bottom.stl"; //string(args[1]);
+	string receiverFilename = "F:/Shane/view-factor-cuda/test/top.stl"; //string(args[2]);
+	string blockerFilename = "F:/Shane/view-factor-cuda/test/none.stl"; //string(args[3]);
 
 	// Specify GPU's
 
 	// Create STL readers
 	STLReader emitterReader(emitterFilename);
-	STLReader receiverReader(emitterFilename);
+	STLReader receiverReader(receiverFilename);
 	STLReader blockerReader(blockerFilename);
 
 	// Create Geometries
@@ -54,15 +54,16 @@ int main(int argc, char** args)
 
 	int deviceCount;
 	cudaGetDeviceCount(&deviceCount);
-	cout << "Number of available devices is: " << deviceCount;
+	cout << "Number of available devices is: " << deviceCount << endl;
 
 
 	vector<thread> threads;
 	double* vfs = (double*)calloc(deviceCount, sizeof(double));
 
+	int s = emitterGeometry.size();
 	for (int i = 0; i < deviceCount; i++) {
-		int start = 0;
-		int end = emitterGeometry.size();
+		int start = (i * s / deviceCount);
+		int end = ((i+1) * s / deviceCount);
 		threads.push_back(thread(runMT, emitterGeometry, receiverGeometry, blockerGeometry, i, start, end, vfs));
 	}
 	for (auto& seg : threads) {
@@ -70,6 +71,7 @@ int main(int argc, char** args)
 	}
 	double vf = 0.0;
 	for (int i = 0; i < deviceCount; i++) {
+		cout << "Device,VF: " << i << "," << vfs[i] << endl;
 		vf += vfs[i];
 	}
 

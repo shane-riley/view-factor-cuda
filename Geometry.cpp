@@ -4,11 +4,17 @@ Geometry::Geometry(STLReader &reader) {
 	
 	// Open file
 	reader.openFile();
+	if (!reader.file.is_open()) {
+		cout << "File not found: " << reader.filename << endl;
+		cout << "Terminating..." << endl;
+		exit(0);
+	}
 
-	initWithSize(reader.getNumFacets());
+	int numFacets = reader.getNumFacets();
+	initWithSize(numFacets);
 	reader.resetFile();
 
-	for (int i = 0; i < reader.getNumFacets(); i++) {
+	for (int i = 0; i < numFacets; i++) {
 		vector<double3> info = reader.getNextFacet();
 		normalX[i] = info[0].x;
 		normalY[i] = info[0].y;
@@ -86,13 +92,13 @@ void Geometry::freeMemory() {
 
 double Geometry::areaOf(vector<double3> triangle ) {
 	
-	double x1 = triangle[1].x - triangle[0].x;
-	double x2 = triangle[1].y - triangle[0].y;
-	double x3 = triangle[1].z - triangle[0].z;
+	double x1 = triangle[2].x - triangle[1].x;
+	double x2 = triangle[2].y - triangle[1].y;
+	double x3 = triangle[2].z - triangle[1].z;
 
-	double y1 = triangle[2].x - triangle[0].x;
-	double y2 = triangle[2].y - triangle[0].y;
-	double y3 = triangle[2].z - triangle[0].z;
+	double y1 = triangle[3].x - triangle[1].x;
+	double y2 = triangle[3].y - triangle[1].y;
+	double y3 = triangle[3].z - triangle[1].z;
 
 	return .5 * sqrt((x2 * y3 - x3 * y2) * (x2 * y3 - x3 * y2) + (x3 * y1 - x1 * y3) * (x3 * y1 - x1 * y3) + (x1 * y2 - x2 * y1) * (x1 * y2 - x2 * y1));
 }

@@ -40,7 +40,7 @@ STLReader::STLReader(string ffilename) {
 }
 
 void STLReader::openFile() {
-    file.open(filename);
+    file.open(filename, ios::in);
 }
 
 void STLReader::resetFile() {
@@ -95,14 +95,15 @@ vector<double3> STLReader::getNextFacet() {
     double3 coord;
     
     // Place normal
-    ss >> temp >> coord.x >> coord.y >> coord.z;
+    ss >> temp >> temp >> coord.x >> coord.y >> coord.z;
     result.push_back(coord);
 
     // Move forward two lines
     safeGetline(file, line);
-    safeGetline(file, line);
 
     for (int i = 0; i < 3; i++) {
+        safeGetline(file, line);
+        ss = stringstream(line);
         ss >> temp >> coord.x >> coord.y >> coord.z;
         result.push_back(coord);
     }
