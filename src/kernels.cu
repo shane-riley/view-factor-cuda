@@ -22,9 +22,11 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 		+ b.edgeBAZ[bi] * pvec.z;
 
 	// CULLING (no blocking behind the emitter)
+#ifdef DO_BACKFACE_CULLING
 	if (det < 0) {
 		return 0;
 	}
+#endif
 
 	// Ray is parallel to plane
 	if (det < 1e-8 && det > -1e-8) {

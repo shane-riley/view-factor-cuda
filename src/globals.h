@@ -16,7 +16,8 @@
 #include <chrono>
 
 // Turn on self-intersection at compile time
-//#define DO_SELF_INTERSECTION
+#define DO_SELF_INTERSECTION
+#define DO_BACKFACE_CULLING
 
 // This sets the namespace to std, which shortens many of our stdlib type and function references
 using namespace std;
