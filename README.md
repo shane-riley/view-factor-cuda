@@ -11,8 +11,14 @@ A CUDA-based implementation of the MT View Factor calculation, featuring multi-G
 
 ## TODO's
 
-- Implement the STL reading (get number of facets and get next facet)
-- Implement the Geometry methods (allocate, free, populate, etc.)
-- Draw up the MTCalculator structure (GPU pointers, gpu function wrappers, etc.)
-- Implement MTCalculator
-- Drive MTCalulator instances in parallel in main
+Validations
+
+- Validate Parallel Plates (DONE)
+- Validate Perpendicular Plates
+- Validate Spheres
+- Validate Cylinders
+- Validate Blockers
+
+Implementations
+
+- Implement gtest framework
