@@ -16,7 +16,6 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 					r.z * b.edgeCAX[bi] - r.x * b.edgeCAZ[bi],
 					r.x * b.edgeCAY[bi] - r.y * b.edgeCAX[bi] };
 
-	double interDist = -1.0;
 
 	double det = b.edgeBAX[bi] * pvec.x
 		+ b.edgeBAY[bi] * pvec.y
@@ -58,10 +57,8 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 	}
 }
 
-__global__ void evaluateEmitter(int e, int startEmitter, int numEmitters, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
+__global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
 	size_t r = blockIdx.x * blockDim.x + threadIdx.x;
-
-	int add = (e - startEmitter) + numEmitters * r;
 
 	if (r < gpuReceiver.arraySize)
 	{
@@ -77,10 +74,27 @@ __global__ void evaluateEmitter(int e, int startEmitter, int numEmitters, GPUGeo
 
 			// If intersected, kill the thread
 			if (dist != 0 && dist <= rayMagnitude) {
-				result[add] = 0;
+				result[r] += 0;
 				return;
 			}
 		}
+
+
+#ifdef DO_SELF_INTERSECTION
+
+		// Check for self-intersection
+		for (int b = 0; b < gpuEmitter.arraySize; b++) {
+			if (e == b) continue;
+
+			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuEmitter);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+#endif
 
 		double3 eNormal = { gpuEmitter.normalX[e], gpuEmitter.normalY[e], gpuEmitter.normalZ[e] };
 		double3 rNormal = { gpuReceiver.normalX[r], gpuReceiver.normalY[r], gpuReceiver.normalZ[r] };
@@ -99,7 +113,7 @@ __global__ void evaluateEmitter(int e, int startEmitter, int numEmitters, GPUGeo
 			cosThetaTwo = -cosThetaTwo;
 		}
 
-		result[add] = cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
+		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
 			/ (pi * rayMagnitude * rayMagnitude);
 
 		// Check for emitting blockers

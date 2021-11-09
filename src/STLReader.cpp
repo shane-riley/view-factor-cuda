@@ -39,6 +39,8 @@ STLReader::STLReader(string ffilename) {
     filename = ffilename;
 }
 
+STLReader::STLReader() {}
+
 void STLReader::openFile() {
     file.open(filename, ios::in);
 }

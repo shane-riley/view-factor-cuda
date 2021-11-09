@@ -13,6 +13,10 @@
 #include <cublas_v2.h>
 #include <helper_cuda.h>
 #include <device_launch_parameters.h>
+#include <chrono>
+
+// Turn on self-intersection at compile time
+//#define DO_SELF_INTERSECTION
 
 // This sets the namespace to std, which shortens many of our stdlib type and function references
 using namespace std;
@@ -24,5 +28,10 @@ const static int Z = 2;
 const string OUT_FILE = "output.txt";
 const static int BLOCKSIZE = 32;
 const static double PI = 3.14159265359;
+
+// Time
+typedef std::chrono::high_resolution_clock Time;
+typedef std::chrono::seconds sec;
+typedef std::chrono::duration<float> fsec;
 
 #endif  /* GLOBALS_H_ */  

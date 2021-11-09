@@ -1,5 +1,9 @@
 #include "Geometry.h"
 
+Geometry::Geometry() {
+	arraySize = 0;
+}
+
 Geometry::Geometry(STLReader &reader) {
 	
 	// Open file
