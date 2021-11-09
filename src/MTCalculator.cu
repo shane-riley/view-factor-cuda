@@ -10,7 +10,7 @@ MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry
 	startEmitter = emitterBegin;
 	stopEmitter = emitterEnd;
 
-	int numResults = (stopEmitter - startEmitter) * gpuReceiver.arraySize;
+	int numResults = gpuReceiver.arraySize;
 	checkCudaErrors(cudaMalloc((void**)&result, numResults * sizeof(double)));
 }
 
@@ -29,19 +29,20 @@ double MTCalculator::calculateVF() {
 	// Get number of receivers evaluated
 	int numReceivers = gpuReceiver.arraySize;
 
-	long numResults = numEmitters * numReceivers;
+	long numResults = numReceivers;
 
 	// Loop through assigned emitters
+	auto tStart = Time::now();
+
 	for (int e = startEmitter; e < stopEmitter; e++) {
 		cudaEvaluateEmitter(e, startEmitter, numEmitters);
 	}
+	cout << "GPU DONE!" << endl;
+	auto tGPUDone = Time::now();
+
+	sec tGPU = chrono::duration_cast<sec>(tGPUDone - tStart);
 
 	// Sum all of the results
-	
-	// Sum on CPU for now
-	//double* total;
-	//checkCudaErrors(cudaMalloc((void**)&total, 1 * sizeof(double)));
-
 	// Sum on CPU for now
 	// TODO: Implement a GPU-based block reduction
 	double* cpuResult = (double*)malloc(numResults * sizeof(double));
@@ -54,6 +55,12 @@ double MTCalculator::calculateVF() {
 	}
 	free(cpuResult);
 
+	auto tAllDone = Time::now();
+
+	sec tCPU = chrono::duration_cast<sec>(tAllDone - tGPUDone);
+
+	cout << deviceNum << ": (Time CPU, Time GPU) [s] => (" << tCPU.count() << ", " << tGPU.count() << ")" << endl;
+
 	// Return sum
 	return cpuTotal;
 }
@@ -62,7 +69,7 @@ double MTCalculator::calculateVF() {
 
 void MTCalculator::cudaEvaluateEmitter(int e, int start, int num) {
 	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
-	evaluateEmitter<<<nblocks, BLOCKSIZE>>> (e, start, num, gpuEmitter, gpuReceiver, gpuBlocker, result);
+	evaluateEmitter<<<nblocks, BLOCKSIZE>>> (e, start, gpuEmitter, gpuReceiver, gpuBlocker, result);
 }
 
 //double MTCalculator::cudaSumVector(int e, double* result, double* total) {

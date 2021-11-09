@@ -41,6 +41,9 @@ public:
 	// Geometry constructor from STL reader
 	Geometry(STLReader &reader);
 
+	// Void constructor
+	Geometry();
+
 	// Someday we will make a constructor that takes a TEGDefinition as an input
 
 	// initWithSize method (allocates all arrays as size-length and full of zeroes)

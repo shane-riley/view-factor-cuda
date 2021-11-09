@@ -18,6 +18,9 @@ public:
 	// Constructor
 	STLReader(string ffilename);
 
+	// Void constructor
+	STLReader();
+
 	// Open file
 	void openFile();
 
