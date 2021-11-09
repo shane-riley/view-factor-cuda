@@ -7,7 +7,7 @@ __device__ double vectorMagnitude(double3 r) {
 }
 
 __device__ double vectorDot(double3 r1, double3 r2) {
-	return sqrt(r1.x * r2.x + r1.y * r2.y + r1.z * r2.z);
+	return r1.x * r2.x + r1.y * r2.y + r1.z * r2.z;
 }
 
 __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e, GPUGeometry &b) {
