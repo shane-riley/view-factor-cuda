@@ -122,15 +122,8 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		double emitterNormalDotRay = vectorDot(eNormal, ray);
 		double receiverNormalDotRay = vectorDot(rNormal, ray);
 
-		double cosThetaOne = emitterNormalDotRay / emitterDenominator;
-		double cosThetaTwo = receiverNormalDotRay / receiverDenominator;
-
-		if (cosThetaOne < 0) {
-			cosThetaOne = -cosThetaOne;
-		}
-		if (cosThetaTwo < 0) {
-			cosThetaTwo = -cosThetaTwo;
-		}
+		double cosThetaOne = abs(emitterNormalDotRay / emitterDenominator);
+		double cosThetaTwo = abs(receiverNormalDotRay / receiverDenominator);
 
 		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
 			/ (pi * rayMagnitude * rayMagnitude);
