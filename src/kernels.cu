@@ -84,7 +84,7 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 
 #ifdef DO_SELF_INTERSECTION
 
-		// Check for self-intersection
+		// Check for self-intersection of emitters
 		for (int b = 0; b < gpuEmitter.arraySize; b++) {
 			if (e == b) continue;
 
@@ -96,6 +96,20 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 				return;
 			}
 		}
+
+		// Check for self-intersection of receivers
+		for (int b = 0; b < gpuReceiver.arraySize; b++) {
+			if (r == b) continue;
+
+			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuReceiver);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
 #endif
 
 		double3 eNormal = { gpuEmitter.normalX[e], gpuEmitter.normalY[e], gpuEmitter.normalZ[e] };
