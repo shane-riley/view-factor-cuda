@@ -10,16 +10,24 @@ __device__ double vectorDot(double3 r1, double3 r2) {
 	return r1.x * r2.x + r1.y * r2.y + r1.z * r2.z;
 }
 
+__device__ double3 vectorSub(double3 r1, double3 r2) {
+	double3 r3 = { r1.x - r2.x, r1.y - r2.y, r1.z - r2.z };
+	return r3;
+}
+
+__device__ double3 vectorCross(double3 r1, double3 r2) {
+	double3 r3 = { r1.y * r2.z - r1.z * r2.y,
+					r1.z * r2.x - r1.x * r2.z,
+					r1.x * r2.y - r1.y * r2.x };
+	return r3;
+}
+
 __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e, GPUGeometry &b) {
 
-	double3 pvec = { r.y * b.edgeCAZ[bi] - r.z * b.edgeCAY[bi],
-					r.z * b.edgeCAX[bi] - r.x * b.edgeCAZ[bi],
-					r.x * b.edgeCAY[bi] - r.y * b.edgeCAX[bi] };
+	// r cross edge
+	double3 pvec = vectorCross(r, b.edgeCA[bi]);
 
-
-	double det = b.edgeBAX[bi] * pvec.x
-		+ b.edgeBAY[bi] * pvec.y
-		+ b.edgeBAZ[bi] * pvec.z;
+	double det = vectorDot(b.edgeBA[bi], pvec);
 
 	// CULLING (no blocking behind the emitter)
 #ifdef DO_BACKFACE_CULLING
@@ -35,19 +43,15 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 
 	double invDet = 1 / det;
 
-	double3 tvec = { e.centerX[ei] - b.vertexAX[bi],
-					e.centerY[ei] - b.vertexAY[bi],
-					e.centerZ[ei] - b.vertexAZ[bi] };
+	double3 tvec = vectorSub(e.center[ei], b.vertexA[bi]);
 
 	double u = invDet * vectorDot(tvec, pvec);
 
 	if (u < 0 || u > 1) {
 		return 0;
 	}
-
-	double3 qvec = { tvec.y * b.edgeBAZ[bi] - tvec.z * b.edgeBAY[bi],
-					tvec.z * b.edgeBAX[bi] - tvec.x * b.edgeBAZ[bi],
-					tvec.x * b.edgeBAY[bi] - tvec.y * b.edgeBAX[bi] };
+	
+	double3 qvec = vectorCross(tvec, b.edgeBA[bi]);
 
 	double v = invDet * vectorDot(r, qvec);
 
@@ -55,7 +59,7 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 		return 0;
 	}
 	else {
-		return (b.edgeCAX[bi] * qvec.x + b.edgeCAY[bi] * qvec.y + b.edgeCAZ[bi] * qvec.z) * invDet;
+		return vectorDot(b.edgeCA[bi], qvec) * invDet;
 	}
 }
 
@@ -65,9 +69,8 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 	if (r < gpuReceiver.arraySize)
 	{
 		// Cast ray
-		double3 ray = { gpuReceiver.centerX[r] - gpuEmitter.centerX[e],
-						gpuReceiver.centerY[r] - gpuEmitter.centerY[e],
-						gpuReceiver.centerZ[r] - gpuEmitter.centerZ[e] };
+		double3 ray = vectorSub(gpuReceiver.center[r], gpuEmitter.center[e]);
+
 		double rayMagnitude = vectorMagnitude(ray);
 
 		// Check for blocking blockers
@@ -84,7 +87,7 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 
 #ifdef DO_SELF_INTERSECTION
 
-		// Check for self-intersection
+		// Check for self-intersection of emitters
 		for (int b = 0; b < gpuEmitter.arraySize; b++) {
 			if (e == b) continue;
 
@@ -96,10 +99,24 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 				return;
 			}
 		}
+
+		// Check for self-intersection of receivers
+		for (int b = 0; b < gpuReceiver.arraySize; b++) {
+			if (r == b) continue;
+
+			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuReceiver);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
 #endif
 
-		double3 eNormal = { gpuEmitter.normalX[e], gpuEmitter.normalY[e], gpuEmitter.normalZ[e] };
-		double3 rNormal = { gpuReceiver.normalX[r], gpuReceiver.normalY[r], gpuReceiver.normalZ[r] };
+		double3 eNormal = gpuEmitter.normal[e];
+		double3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
 		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
 		double emitterNormalDotRay = vectorDot(eNormal, ray);

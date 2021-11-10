@@ -10,35 +10,24 @@ class GPUGeometry
 {
 
 public:
-
 	// Size
 	int arraySize;
 
 	// NOTE: It might be possible to use std::vectors for these arrays and then copy them over--later problem
 	// size-length pointers
-	double* normalX;
-	double* normalY;
-	double* normalZ;
+	double3 *normal;
 
-	double* vertexAX;
-	double* vertexAY;
-	double* vertexAZ;
+	double3 *vertexA;
 
-	double* edgeBAX;
-	double* edgeBAY;
-	double* edgeBAZ;
+	double3 *edgeBA;
 
-	double* edgeCAX;
-	double* edgeCAY;
-	double* edgeCAZ;
+	double3 *edgeCA;
 
-	double* centerX;
-	double* centerY;
-	double* centerZ;
+	double3 *center;
 
-	double* area;
+	double *area;
 
-	double* result;
+	double *result;
 
 	// GPUGeometry constructor from regular Geometry
 	GPUGeometry(Geometry &geom);
@@ -47,7 +36,6 @@ public:
 
 	// Free memory
 	void freeMemory();
-
 };
 
-#endif  /* GPUGEOMETRY_H_ */
+#endif /* GPUGEOMETRY_H_ */

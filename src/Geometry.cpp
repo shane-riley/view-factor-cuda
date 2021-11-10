@@ -1,14 +1,17 @@
 #include "Geometry.h"
 
-Geometry::Geometry() {
+Geometry::Geometry()
+{
 	arraySize = 0;
 }
 
-Geometry::Geometry(STLReader &reader) {
-	
+Geometry::Geometry(STLReader &reader)
+{
+
 	// Open file
 	reader.openFile();
-	if (!reader.file.is_open()) {
+	if (!reader.file.is_open())
+	{
 		cout << "File not found: " << reader.filename << endl;
 		cout << "Terminating..." << endl;
 		exit(0);
@@ -18,84 +21,67 @@ Geometry::Geometry(STLReader &reader) {
 	initWithSize(numFacets);
 	reader.resetFile();
 
-	for (int i = 0; i < numFacets; i++) {
+	for (int i = 0; i < numFacets; i++)
+	{
 		vector<double3> info = reader.getNextFacet();
-		normalX[i] = info[0].x;
-		normalY[i] = info[0].y;
-		normalZ[i] = info[0].z;
+		normal[i].x = info[0].x;
+		normal[i].y = info[0].y;
+		normal[i].z = info[0].z;
 
-		vertexAX[i] = info[1].x;
-		vertexAY[i] = info[1].y;
-		vertexAZ[i] = info[1].z;
+		vertexA[i].x = info[1].x;
+		vertexA[i].y = info[1].y;
+		vertexA[i].z = info[1].z;
 
-		edgeBAX[i] = info[2].x - vertexAX[i];
-		edgeBAY[i] = info[2].y - vertexAY[i];
-		edgeBAZ[i] = info[2].z - vertexAZ[i];
+		edgeBA[i].x = info[2].x - vertexA[i].x;
+		edgeBA[i].y = info[2].y - vertexA[i].y;
+		edgeBA[i].z = info[2].z - vertexA[i].z;
 
-		edgeCAX[i] = info[3].x - vertexAX[i];
-		edgeCAY[i] = info[3].y - vertexAY[i];
-		edgeCAZ[i] = info[3].z - vertexAZ[i];
+		edgeCA[i].x = info[3].x - vertexA[i].x;
+		edgeCA[i].y = info[3].y - vertexA[i].y;
+		edgeCA[i].z = info[3].z - vertexA[i].z;
 
-		centerX[i] = (info[1].x + info[2].x + info[3].x) / 3;
-		centerY[i] = (info[1].y + info[2].y + info[3].y) / 3;
-		centerZ[i] = (info[1].z + info[2].z + info[3].z) / 3;
-	
+		center[i].x = (info[1].x + info[2].x + info[3].x) / 3;
+		center[i].y = (info[1].y + info[2].y + info[3].y) / 3;
+		center[i].z = (info[1].z + info[2].z + info[3].z) / 3;
+
 		area[i] = areaOf(info);
 	}
-
 }
 
-void Geometry::initWithSize(int newSize) {
+void Geometry::initWithSize(int newSize)
+{
 	arraySize = newSize;
-	normalX = (double*)calloc(arraySize, sizeof(double));
-	normalY = (double*)calloc(arraySize, sizeof(double));
-	normalZ = (double*)calloc(arraySize, sizeof(double));
+	normal = (double3 *)calloc(arraySize, sizeof(double3));
 
-	vertexAX = (double*)calloc(arraySize, sizeof(double));
-	vertexAY = (double*)calloc(arraySize, sizeof(double));
-	vertexAZ = (double*)calloc(arraySize, sizeof(double));
+	vertexA = (double3 *)calloc(arraySize, sizeof(double3));
 
-	edgeBAX = (double*)calloc(arraySize, sizeof(double));
-	edgeBAY = (double*)calloc(arraySize, sizeof(double));
-	edgeBAZ = (double*)calloc(arraySize, sizeof(double));
+	edgeBA = (double3 *)calloc(arraySize, sizeof(double3));
 
-	edgeCAX = (double*)calloc(arraySize, sizeof(double));
-	edgeCAY = (double*)calloc(arraySize, sizeof(double));
-	edgeCAZ = (double*)calloc(arraySize, sizeof(double));
+	edgeCA = (double3 *)calloc(arraySize, sizeof(double3));
 
-	centerX = (double*)calloc(arraySize, sizeof(double));
-	centerY = (double*)calloc(arraySize, sizeof(double));
-	centerZ = (double*)calloc(arraySize, sizeof(double));
+	center = (double3 *)calloc(arraySize, sizeof(double3));
 
-	area = (double*)calloc(arraySize, sizeof(double));
+	area = (double *)calloc(arraySize, sizeof(double3));
 }
 
-void Geometry::freeMemory() {
-	free(normalX);
-	free(normalY);
-	free(normalZ);
+void Geometry::freeMemory()
+{
+	free(normal);
 
-	free(vertexAX);
-	free(vertexAY);
-	free(vertexAZ);
+	free(vertexA);
 
-	free(edgeBAX);
-	free(edgeBAY);
-	free(edgeBAZ);
+	free(edgeBA);
 
-	free(edgeCAX);
-	free(edgeCAY);
-	free(edgeCAZ);
+	free(edgeCA);
 
-	free(centerX);
-	free(centerY);
-	free(centerZ);
+	free(center);
 
 	free(area);
 }
 
-double Geometry::areaOf(vector<double3> triangle ) {
-	
+double Geometry::areaOf(vector<double3> triangle)
+{
+
 	double x1 = triangle[2].x - triangle[1].x;
 	double x2 = triangle[2].y - triangle[1].y;
 	double x3 = triangle[2].z - triangle[1].z;
