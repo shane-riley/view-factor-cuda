@@ -62,6 +62,12 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>F:\tools\Include\10.0.10240.0\ucrt; "C:\ProgramData\NVIDIA Corporation\CUDA Samples\v11.5\common\inc"</Include>
     </CudaCompile>
+    <PostBuildEvent>
+      <Command>lib /NOLOGO /OUT:"$(TargetPath).lib" "$(ProjectDir)$(IntDir)*.obj"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Make library for testing</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -93,6 +99,7 @@
     <ClInclude Include="kernels.cuh" />
     <ClInclude Include="MTCalculator.cuh" />
     <ClInclude Include="STLReader.h" />
+    <ClInclude Include="vfcuda.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Geometry.cpp" />

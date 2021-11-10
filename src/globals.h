@@ -14,6 +14,7 @@
 #include <helper_cuda.h>
 #include <device_launch_parameters.h>
 #include <chrono>
+#include <stdexcept>
 
 // Turn on self-intersection at compile time
 //#define DO_SELF_INTERSECTION

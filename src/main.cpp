@@ -21,20 +21,6 @@ void runMT(Geometry &emitterGeometry, Geometry &receiverGeometry, Geometry &bloc
 double getVF(string ef, string rf, string bf) {
 	bool do_blocker = (bf.size() > 0);
 
-	STLReader emitterReader(ef);
-	STLReader receiverReader(rf);
-
-	STLReader blockerReader;
-	if (do_blocker) blockerReader = STLReader(bf);
-
-	Geometry emitterGeometry(emitterReader);
-	Geometry receiverGeometry(receiverReader);
-	Geometry blockerGeometry;
-	if (do_blocker) blockerGeometry = Geometry(blockerReader);
-
-	int deviceCount;
-	cudaGetDeviceCount(&deviceCount);
-	
 	cout << "VFCUDA" << endl;
 	cout << endl;
 
@@ -42,6 +28,31 @@ double getVF(string ef, string rf, string bf) {
 	cout << "Emitter: " << ef << endl;
 	cout << "Receiver: " << rf << endl;
 	if (do_blocker) cout << "Blocker: " << bf << endl;
+
+	STLReader emitterReader(ef);
+	STLReader receiverReader(rf);
+
+	STLReader blockerReader;
+	if (do_blocker) blockerReader = STLReader(bf);
+
+	Geometry emitterGeometry;
+	Geometry receiverGeometry;
+	Geometry blockerGeometry;
+	cout << "Reading files..." << endl;
+	try {
+		emitterGeometry = Geometry(emitterReader);
+		receiverGeometry = Geometry(receiverReader);
+		if (do_blocker) blockerGeometry = Geometry(blockerReader);
+	}
+	catch (runtime_error e) {
+		cout << "ERROR! File not found: " << e.what() << endl;
+		cout << "Terminating..." << endl;
+		return -1;
+	}
+	cout << "Files loaded." << endl;
+
+	int deviceCount;
+	cudaGetDeviceCount(&deviceCount);
 
 	cout << "------------------------------------------" << endl;
 	cout << endl;

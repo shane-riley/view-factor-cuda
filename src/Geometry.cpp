@@ -12,9 +12,7 @@ Geometry::Geometry(STLReader &reader)
 	reader.openFile();
 	if (!reader.file.is_open())
 	{
-		cout << "File not found: " << reader.filename << endl;
-		cout << "Terminating..." << endl;
-		exit(0);
+		throw runtime_error(reader.filename);
 	}
 
 	int numFacets = reader.getNumFacets();
