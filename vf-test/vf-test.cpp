@@ -38,5 +38,22 @@ namespace vftest
 
 			Assert::AreEqual(vf, expectedVF, tolerance);
 		}
+
+		TEST_METHOD(Spheres_Coarse)
+		{
+
+			// Definition
+			string folder = "/stl/Spheres/Coarse";
+			string ef = (string)TEST_CASE_DIRECTORY + folder + "/inner_4470T.STL";
+			string rf = (string)TEST_CASE_DIRECTORY + folder + "/outer_4478T.STL";
+			double expectedVF = 1.00;
+			double tolerance = 0.01;
+
+			// Run VF
+			// TODO: Add timeout
+			double vf = getVF(ef, rf);
+
+			Assert::AreEqual(vf, expectedVF, tolerance);
+		}
 	};
 }

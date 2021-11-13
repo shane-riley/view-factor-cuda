@@ -1,6 +1,8 @@
 #pragma once
 
-#include <string>
+#include "globals.h"
+#include "Geometry.h"
+#include "MTCalculator.cuh"
 
 using namespace std;
 
