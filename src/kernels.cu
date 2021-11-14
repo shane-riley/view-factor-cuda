@@ -22,7 +22,7 @@ __device__ double3 vectorCross(double3 r1, double3 r2) {
 	return r3;
 }
 
-__device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e, GPUGeometry &b) {
+__device__ double intersectionDistance(int ei, int bi, double3 r, GPUGeometry& e, GPUGeometry &b) {
 
 	// r cross edge
 	double3 pvec = vectorCross(r, b.edgeCA[bi]);
@@ -41,7 +41,7 @@ __device__ double intersectionDistance(int bi, int ei, double3 r, GPUGeometry& e
 		return 0;
 	}
 
-	double invDet = 1 / det;
+	double invDet = 1.0 / det;
 
 	double3 tvec = vectorSub(e.center[ei], b.vertexA[bi]);
 
@@ -75,7 +75,7 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 
 		// Check for blocking blockers
 		for (int b = 0; b < gpuBlocker.arraySize; b++) {
-			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuBlocker);
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuBlocker);
 
 			// If intersected, kill the thread
 			if (dist != 0 && dist <= rayMagnitude) {
@@ -85,13 +85,15 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		}
 
 
-#ifdef DO_SELF_INTERSECTION
+#ifdef NO_SELF_INTERSECTION
+		// Do nothing
+#else
 
 		// Check for self-intersection of emitters
 		for (int b = 0; b < gpuEmitter.arraySize; b++) {
 			if (e == b) continue;
 
-			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuEmitter);
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuEmitter);
 
 			// If intersected, kill the thread
 			if (dist != 0 && dist <= rayMagnitude) {
@@ -104,7 +106,7 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		for (int b = 0; b < gpuReceiver.arraySize; b++) {
 			if (r == b) continue;
 
-			double dist = intersectionDistance(b, e, ray, gpuEmitter, gpuReceiver);
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuReceiver);
 
 			// If intersected, kill the thread
 			if (dist != 0 && dist <= rayMagnitude) {

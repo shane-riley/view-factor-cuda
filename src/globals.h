@@ -8,17 +8,22 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <cuda.h>
-#include <cublas.h>
-#include <cublas_v2.h>
-#include <helper_cuda.h>
-#include <device_launch_parameters.h>
 #include <chrono>
 #include <stdexcept>
 #include <thread>
 
+// CUDA Toolkit imports
+#include <cuda.h>
+#include <cublas.h>
+#include <cublas_v2.h>
+#include <device_launch_parameters.h>
+
+// CUDA sample imports
+#include <helper_cuda.h>
+#include <thrust/reduce.h>
+
 // Turn on self-intersection at compile time
-#define DO_SELF_INTERSECTION
+//#define NO_SELF_INTERSECTION
 #define DO_BACKFACE_CULLING
 
 // This sets the namespace to std, which shortens many of our stdlib type and function references
