@@ -103,17 +103,17 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		}
 
 		// Check for self-intersection of receivers
-		for (int b = 0; b < gpuReceiver.arraySize; b++) {
-			if (r == b) continue;
+		// for (int b = 0; b < gpuReceiver.arraySize; b++) {
+		// 	if (r == b) continue;
 
-			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuReceiver);
+		// 	double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuReceiver);
 
-			// If intersected, kill the thread
-			if (dist != 0 && dist <= rayMagnitude) {
-				result[r] += 0;
-				return;
-			}
-		}
+		// 	// If intersected, kill the thread
+		// 	if (dist != 0 && dist <= rayMagnitude) {
+		// 		result[r] += 0;
+		// 		return;
+		// 	}
+		// }
 
 #endif
 

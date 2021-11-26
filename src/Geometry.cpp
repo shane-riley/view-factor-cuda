@@ -91,4 +91,14 @@ double Geometry::areaOf(vector<double3> triangle)
 	return .5 * sqrt((x2 * y3 - x3 * y2) * (x2 * y3 - x3 * y2) + (x3 * y1 - x1 * y3) * (x3 * y1 - x1 * y3) + (x1 * y2 - x2 * y1) * (x1 * y2 - x2 * y1));
 }
 
+double Geometry::totalArea()
+{
+	double totalArea = 0.0;
+	for (int i = 0; i < arraySize; i++) {
+		totalArea += area[i];
+	}
+	return totalArea;
+	
+}
+
 int Geometry::size() { return arraySize; }

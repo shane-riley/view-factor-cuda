@@ -11,6 +11,7 @@
 #include <chrono>
 #include <stdexcept>
 #include <thread>
+#include <assert.h>
 
 // CUDA Toolkit imports
 #include <cuda.h>

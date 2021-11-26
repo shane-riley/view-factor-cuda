@@ -45,6 +45,9 @@ public:
 	// areaOf method (same as Aparapi)
 	static double areaOf(vector<double3> triangle);
 
+	// Total area
+	double totalArea();
+
 	// Size method
 	int size();
 };

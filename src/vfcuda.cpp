@@ -55,6 +55,15 @@ double getVF(string ef, string rf, string bf) {
 	cout << "RT: " << receiverGeometry.arraySize << endl;
 	if (do_blocker) cout << "BT: " << blockerGeometry.arraySize << endl;
 
+	// Calculate areas
+	double eArea = emitterGeometry.totalArea();
+	double rArea = receiverGeometry.totalArea();
+	double bArea = (do_blocker) ? blockerGeometry.totalArea() : 0.0;
+
+	cout << "Total areas: " << endl;
+	cout << "ET: " << eArea << endl;
+	cout << "RT: " << rArea << endl;
+	if (do_blocker) cout << "BT: " << bArea << endl;
 	cout << "------------------------------------------" << endl;
 	cout << endl;
 
@@ -82,8 +91,9 @@ double getVF(string ef, string rf, string bf) {
 	double vf = 0.0;
 	for (int i = 0; i < deviceCount; i++) {
 		cout << "VF per thread:" << endl;
-		cout << "Thread " << i << ": " << vfs[i] << endl;
-		vf += vfs[i];
+		double thisVF = vfs[i] / eArea;
+		cout << "Thread " << i << ": " << thisVF << endl;
+		vf += thisVF;
 	}
 	cout << "------------------------------------------" << endl;
 	cout << endl;
