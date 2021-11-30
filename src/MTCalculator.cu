@@ -31,16 +31,46 @@ double MTCalculator::calculateVF() {
 
 	long numResults = numReceivers;
 
+	// Determine which selfint to use
+	char *selfIntSettingStr;
+	int selfIntSetting = 0;
+	selfIntSettingStr = getenv(SELFINT_ENV_VAR);
+	if (selfIntSettingStr != NULL) {
+		selfIntSetting = atoi(selfIntSettingStr);
+	}
 	// Loop through assigned emitters
 	auto tStart = Time::now();
-
-	for (int e = startEmitter; e < stopEmitter; e++) {
-		cudaEvaluateEmitter(e, startEmitter, numEmitters);
+	switch (selfIntSetting)
+	{
+		case 0:
+			for (int e = startEmitter; e < stopEmitter; e++) {
+				cudaEvaluateEmitter(e, startEmitter, numEmitters);
+			}
+			break;
+		case 1:
+			for (int e = startEmitter; e < stopEmitter; e++) {
+				cudaEvaluateEmitterSelfIntEmitter(e, startEmitter, numEmitters);
+			}
+			break;
+		case 2:
+			for (int e = startEmitter; e < stopEmitter; e++) {
+				cudaEvaluateEmitterSelfIntReceiver(e, startEmitter, numEmitters);
+			}
+			break;
+		case 3:
+			for (int e = startEmitter; e < stopEmitter; e++) {
+				cudaEvaluateEmitterSelfIntBoth(e, startEmitter, numEmitters);
+			}
+			break;
+		default:
+			return -1;
 	}
-	cout << "GPU DONE!" << endl;
+
+	// Kernel invocations are async, wait for actions to complete
+	checkCudaErrors(cudaDeviceSynchronize());
 	auto tGPUDone = Time::now();
 
-	sec tGPU = chrono::duration_cast<sec>(tGPUDone - tStart);
+	msec tGPU = chrono::duration_cast<msec>(tGPUDone - tStart);
 
 	// Sum all of the results
 	// Sum on CPU for now
@@ -55,11 +85,7 @@ double MTCalculator::calculateVF() {
 	}
 	free(cpuResult);
 
-	auto tAllDone = Time::now();
-
-	sec tCPU = chrono::duration_cast<sec>(tAllDone - tGPUDone);
-
-	cout << deviceNum << ": (Time CPU, Time GPU) [s] => (" << tCPU.count() << ", " << tGPU.count() << ")" << endl;
+	cout << "Thread " << deviceNum << " Time [s]: " << setprecision(3) << (float) tGPU.count()/1000.0 << endl;
 
 	// Return sum
 	return cpuTotal;
@@ -70,6 +96,21 @@ double MTCalculator::calculateVF() {
 void MTCalculator::cudaEvaluateEmitter(int e, int start, int num) {
 	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
 	evaluateEmitter<<<nblocks, BLOCKSIZE>>> (e, start, gpuEmitter, gpuReceiver, gpuBlocker, result);
+}
+
+void MTCalculator::cudaEvaluateEmitterSelfIntEmitter(int e, int start, int num) {
+	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
+	evaluateEmitterSelfIntEmitter<<<nblocks, BLOCKSIZE>>> (e, start, gpuEmitter, gpuReceiver, gpuBlocker, result);
+}
+
+void MTCalculator::cudaEvaluateEmitterSelfIntReceiver(int e, int start, int num) {
+	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
+	evaluateEmitterSelfIntReceiver<<<nblocks, BLOCKSIZE>>> (e, start, gpuEmitter, gpuReceiver, gpuBlocker, result);
+}
+
+void MTCalculator::cudaEvaluateEmitterSelfIntBoth(int e, int start, int num) {
+	int nblocks = (gpuReceiver.arraySize / BLOCKSIZE) + 1;
+	evaluateEmitterSelfIntBoth<<<nblocks, BLOCKSIZE>>> (e, start, gpuEmitter, gpuReceiver, gpuBlocker, result);
 }
 
 //double MTCalculator::cudaSumVector(int e, double* result, double* total) {

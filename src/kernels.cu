@@ -84,10 +84,43 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 			}
 		}
 
+		double3 eNormal = gpuEmitter.normal[e];
+		double3 rNormal = gpuReceiver.normal[r];
+		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
+		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
+		double emitterNormalDotRay = vectorDot(eNormal, ray);
+		double receiverNormalDotRay = vectorDot(rNormal, ray);
 
-#ifdef NO_SELF_INTERSECTION
-		// Do nothing
-#else
+		double cosThetaOne = abs(emitterNormalDotRay / emitterDenominator);
+		double cosThetaTwo = abs(receiverNormalDotRay / receiverDenominator);
+
+		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
+			/ (pi * rayMagnitude * rayMagnitude);
+
+	}
+}
+
+__global__ void evaluateEmitterSelfIntEmitter(int e, int startEmitter, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
+	size_t r = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (r < gpuReceiver.arraySize)
+	{
+		// Cast ray
+		double3 ray = vectorSub(gpuReceiver.center[r], gpuEmitter.center[e]);
+
+		double rayMagnitude = vectorMagnitude(ray);
+
+		// Check for blocking blockers
+		for (int b = 0; b < gpuBlocker.arraySize; b++) {
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuBlocker);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
 
 		// Check for self-intersection of emitters
 		for (int b = 0; b < gpuEmitter.arraySize; b++) {
@@ -115,8 +148,6 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		// 	}
 		// }
 
-#endif
-
 		double3 eNormal = gpuEmitter.normal[e];
 		double3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
@@ -130,6 +161,132 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
 			/ (pi * rayMagnitude * rayMagnitude);
 
-		// Check for emitting blockers
+	}
+}
+
+__global__ void evaluateEmitterSelfIntReceiver(int e, int startEmitter, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
+	size_t r = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (r < gpuReceiver.arraySize)
+	{
+		// Cast ray
+		double3 ray = vectorSub(gpuReceiver.center[r], gpuEmitter.center[e]);
+
+		double rayMagnitude = vectorMagnitude(ray);
+
+		// Check for blocking blockers
+		for (int b = 0; b < gpuBlocker.arraySize; b++) {
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuBlocker);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
+
+		// Check for self-intersection of emitters
+		/*
+		for (int b = 0; b < gpuEmitter.arraySize; b++) {
+			if (e == b) continue;
+
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuEmitter);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}*/
+
+		// Check for self-intersection of receivers
+		for (int b = 0; b < gpuReceiver.arraySize; b++) {
+			if (r == b) continue;
+
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuReceiver);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
+		double3 eNormal = gpuEmitter.normal[e];
+		double3 rNormal = gpuReceiver.normal[r];
+		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
+		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
+		double emitterNormalDotRay = vectorDot(eNormal, ray);
+		double receiverNormalDotRay = vectorDot(rNormal, ray);
+
+		double cosThetaOne = abs(emitterNormalDotRay / emitterDenominator);
+		double cosThetaTwo = abs(receiverNormalDotRay / receiverDenominator);
+
+		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
+			/ (pi * rayMagnitude * rayMagnitude);
+	}
+}
+
+__global__ void evaluateEmitterSelfIntBoth(int e, int startEmitter, GPUGeometry gpuEmitter, GPUGeometry gpuReceiver, GPUGeometry gpuBlocker, double* result) {
+	size_t r = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (r < gpuReceiver.arraySize)
+	{
+		// Cast ray
+		double3 ray = vectorSub(gpuReceiver.center[r], gpuEmitter.center[e]);
+
+		double rayMagnitude = vectorMagnitude(ray);
+
+		// Check for blocking blockers
+		for (int b = 0; b < gpuBlocker.arraySize; b++) {
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuBlocker);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
+
+		// Check for self-intersection of emitters
+		for (int b = 0; b < gpuEmitter.arraySize; b++) {
+			if (e == b) continue;
+
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuEmitter);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
+		// Check for self-intersection of receivers
+		for (int b = 0; b < gpuReceiver.arraySize; b++) {
+			if (r == b) continue;
+
+			double dist = intersectionDistance(e, b, ray, gpuEmitter, gpuReceiver);
+
+			// If intersected, kill the thread
+			if (dist != 0 && dist <= rayMagnitude) {
+				result[r] += 0;
+				return;
+			}
+		}
+
+		double3 eNormal = gpuEmitter.normal[e];
+		double3 rNormal = gpuReceiver.normal[r];
+		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
+		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
+		double emitterNormalDotRay = vectorDot(eNormal, ray);
+		double receiverNormalDotRay = vectorDot(rNormal, ray);
+
+		double cosThetaOne = abs(emitterNormalDotRay / emitterDenominator);
+		double cosThetaTwo = abs(receiverNormalDotRay / receiverDenominator);
+
+		result[r] += cosThetaOne * cosThetaTwo * gpuEmitter.area[e] * gpuReceiver.area[r]
+			/ (pi * rayMagnitude * rayMagnitude);
 	}
 }

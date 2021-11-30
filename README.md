@@ -1,24 +1,14 @@
 # view-factor-cuda
 
-:blush: :blush: :blush:
+A CUDA-based implementation of the MT View Factor calculation, featuring multi-GPU compuation using STL's as input
 
 Authors:
 
 - Katie Richmond -- Mechanical Engineering -- University of Pittsburgh
 - Shane Riley -- Mechanical Engineering, Computer Science -- University of Pittsburgh
 
-A CUDA-based implementation of the MT View Factor calculation, featuring multi-GPU compuation using STL's as input
 
 ## TODO's
 
-Validations
-
-- Validate Parallel Plates (DONE)
-- Validate Perpendicular Plates
-- Validate Spheres
-- Validate Cylinders
-- Validate Blockers
-
-Implementations
-
-- Implement gtest framework
+- Update tests to include environment variables SELF_INT and CUDA_VISIBLE_DEVICES
+- Add more to README file

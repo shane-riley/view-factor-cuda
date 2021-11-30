@@ -30,6 +30,9 @@ public:
 
 	// Wrapper methods for gpu kernels
 	void cudaEvaluateEmitter(int e, int start, int num);
+	void cudaEvaluateEmitterSelfIntEmitter(int e, int start, int num);
+	void cudaEvaluateEmitterSelfIntReceiver(int e, int start, int num);
+	void cudaEvaluateEmitterSelfIntBoth(int e, int start, int num);
 
 	void freeMemory();
 

@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include <thread>
 #include <assert.h>
+#include <limits>
+#include <iomanip>
 
 // CUDA Toolkit imports
 #include <cuda.h>
@@ -30,17 +32,14 @@
 // This sets the namespace to std, which shortens many of our stdlib type and function references
 using namespace std;
 
-// These constants will always be availible on CPU
-const static int X = 0;
-const static int Y = 1;
-const static int Z = 2;
-const string OUT_FILE = "output.txt";
+// Standard CUDA blocksize; adjusting has no noticeable effect on runtime
 const static int BLOCKSIZE = 32;
-const static double PI = 3.14159265359;
+const static char SELFINT_ENV_VAR[10] = "SELF_INT";
+const static double PI = 3.14159265358979311599796346854;
 
 // Time
 typedef std::chrono::high_resolution_clock Time;
-typedef std::chrono::seconds sec;
+typedef std::chrono::milliseconds msec;
 typedef std::chrono::duration<float> fsec;
 
 #endif  /* GLOBALS_H_ */  
