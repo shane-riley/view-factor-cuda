@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "../src/vfcuda.h"
 #include <iostream>
+#include <stdlib.h>
 #define TEST_CASE_DIRECTORY GetDirectoryName(__FILE__)
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -24,7 +25,7 @@ namespace vftest
 		
 		TEST_METHOD(ParallelPlates_CoarseSmall)
 		{
-
+			_putenv_s(SELFINT_ENV_VAR, "0");
 			// Definition
 			string folder = "/stl/ParallelPlates/CoarseSmall";
 			string ef = (string) TEST_CASE_DIRECTORY + folder + "/Single_bottom_1024T.STL";
@@ -41,7 +42,7 @@ namespace vftest
 
 		TEST_METHOD(ParallelPlates_Blocked)
 		{
-
+			_putenv_s(SELFINT_ENV_VAR, "0");
 			// Definition
 			string folder = "/stl/ParallelPlates/CoarseSmall";
 			string ef = (string)TEST_CASE_DIRECTORY + folder + "/Single_bottom_1024T.STL";
@@ -59,7 +60,7 @@ namespace vftest
 
 		TEST_METHOD(ParallelPlates_Blocked2)
 		{
-
+			_putenv_s(SELFINT_ENV_VAR, "0");
 			// Definition
 			string folder = "/stl/ParallelPlates/CoarseSmall";
 			string ef = (string)TEST_CASE_DIRECTORY + folder + "/Single_bottom_1024T.STL";
@@ -77,7 +78,7 @@ namespace vftest
 
 		TEST_METHOD(Spheres_Coarse)
 		{
-
+			_putenv_s(SELFINT_ENV_VAR, "1");
 			// Definition
 			string folder = "/stl/Spheres/Coarse";
 			string ef = (string)TEST_CASE_DIRECTORY + folder + "/inner_4470T.STL";

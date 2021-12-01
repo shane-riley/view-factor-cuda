@@ -61,6 +61,10 @@
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>F:\tools\Include\10.0.10240.0\ucrt; "C:\ProgramData\NVIDIA Corporation\CUDA Samples\v11.5\common\inc"</Include>
+      <CodeGeneration>compute_75,sm_75</CodeGeneration>
+      <Optimization>Od</Optimization>
+      <GPUDebugInfo>false</GPUDebugInfo>
+      <HostDebugInfo>false</HostDebugInfo>
     </CudaCompile>
     <PostBuildEvent>
       <Command>lib /NOLOGO /OUT:"$(TargetPath).lib" "$(ProjectDir)$(IntDir)*.obj"</Command>
