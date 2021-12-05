@@ -85,7 +85,7 @@ double MTCalculator::calculateVF() {
 	}
 	free(cpuResult);
 
-	cout << "Thread " << deviceNum << " Time [s]: " << setprecision(3) << (float) tGPU.count()/1000.0 << endl;
+	cout << "Thread " << deviceNum << " Time [s]: " << setprecision(6) << (float) tGPU.count()/1000.0 << endl;
 
 	// Return sum
 	return cpuTotal;

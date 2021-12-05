@@ -54,64 +54,104 @@ void STLReader::closeFile() {
     file.close();
 }
 
-int STLReader::getNumFacets() {
-    
-    string temp;
-
-    // Reset file
-    resetFile();
-    
-    // Skip header
-    safeGetline(file, temp);
-
-    // Count the number of instances of 'facet normal'
-    int numFacets = 0;
-    while (!file.eof()) {
-        safeGetline(file, temp);
-        if (temp.find("facet normal") != string::npos) {
-            numFacets++;
-        }
-    }
-    return numFacets;
+unsigned int STLReader::getNumFacets() {
+    return getNumFacets(false);
 }
 
-vector<double3> STLReader::getNextFacet() {
-	
-    string line = "";
-    vector<double3> result;
-
-    // Look for next facet normal
-    while (!file.eof()) {
-        safeGetline(file, line);
-        if (line.find("facet normal") != string::npos) {
-            break;
-        }
-    }
-    if (file.eof()) {
-        return result;
-    }
-
-    // Line contains normal
-    stringstream ss(line);
-    string temp;
-    double3 coord;
+unsigned int STLReader::getNumFacets(bool binaryMode) {
     
-    // Place normal
-    ss >> temp >> temp >> coord.x >> coord.y >> coord.z;
-    result.push_back(coord);
+    if (binaryMode) {
 
-    // Move forward two lines
-    safeGetline(file, line);
+        // Reset file
+        resetFile();
 
-    for (int i = 0; i < 3; i++) {
-        safeGetline(file, line);
-        ss = stringstream(line);
-        ss >> temp >> coord.x >> coord.y >> coord.z;
-        result.push_back(coord);
+        char buffer[100];
+
+        unsigned int numFacets;
+        // Skip 80 bytes
+        file.read(buffer, 80);
+
+        // Read int
+        file.read(reinterpret_cast<char *>(&numFacets), 4);
+        return numFacets;
     }
+    else {
+        string temp;
 
-    // Move forward two lines
-    safeGetline(file, line);
-    safeGetline(file, line);
-    return result;
+        // Reset file
+        resetFile();
+
+        // Skip header
+        safeGetline(file, temp);
+
+        // Count the number of instances of 'facet normal'
+        int numFacets = 0;
+        while (!file.eof()) {
+            safeGetline(file, temp);
+            if (temp.find("facet normal") != string::npos) {
+                numFacets++;
+            }
+        }
+        return numFacets;
+    }
+}
+
+void STLReader::getToFacets() {
+    char buffer[100];
+    // Skip 84 bytes
+    file.read(buffer, 84);
+}
+
+void STLReader::getNextFacet(float3 &coords) {
+    getNextFacet(coords);
+}
+
+void STLReader::getNextFacet(bool binaryMode, vector<float3> &coords) {
+	
+    if (binaryMode) {
+        for (int j = 0; j < 4; j++) {
+            file.read(reinterpret_cast<char*>(&coords[j].x), 4);
+            file.read(reinterpret_cast<char*>(&coords[j].y), 4);
+            file.read(reinterpret_cast<char*>(&coords[j].z), 4);
+        }
+        // Skip two bytes
+        char buffer[3];
+        file.read(buffer, 2);
+    }
+    else {
+
+        string line = "";
+
+        // Look for next facet normal
+        while (!file.eof()) {
+            safeGetline(file, line);
+            if (line.find("facet normal") != string::npos) {
+                break;
+            }
+        }
+        if (file.eof()) {
+            return;
+        }
+
+        // Line contains normal
+        stringstream ss(line);
+        string temp = "";
+
+        // Place normal
+        ss >> temp >> temp >> coords[0].x >> coords[0].y >> coords[0].z;
+
+        // Move forward two lines
+        safeGetline(file, line);
+
+        for (int i = 1; i < 4; i++) {
+            safeGetline(file, line);
+            ss = stringstream(line);
+            ss >> temp >> coords[i].x >> coords[i].y >> coords[i].z;
+        }
+
+        // Move forward two lines
+        safeGetline(file, line);
+        safeGetline(file, line);
+        return;
+    }
 }

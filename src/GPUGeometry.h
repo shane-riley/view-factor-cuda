@@ -15,15 +15,15 @@ public:
 
 	// NOTE: It might be possible to use std::vectors for these arrays and then copy them over--later problem
 	// size-length pointers
-	double3 *normal;
+	float3 *normal;
 
-	double3 *vertexA;
+	float3 *vertexA;
 
-	double3 *edgeBA;
+	float3 *edgeBA;
 
-	double3 *edgeCA;
+	float3 *edgeCA;
 
-	double3 *center;
+	float3 *center;
 
 	double *area;
 

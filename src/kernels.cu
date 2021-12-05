@@ -6,16 +6,24 @@ __device__ double vectorMagnitude(double3 r) {
 	return sqrt(r.x * r.x + r.y * r.y + r.z * r.z);
 }
 
+__device__ double vectorMagnitude(float3 r) {
+	return sqrt(r.x * r.x + r.y * r.y + r.z * r.z);
+}
+
+__device__ double vectorDot(float3 r1, double3 r2) {
+	return r1.x * r2.x + r1.y * r2.y + r1.z * r2.z;
+}
+
 __device__ double vectorDot(double3 r1, double3 r2) {
 	return r1.x * r2.x + r1.y * r2.y + r1.z * r2.z;
 }
 
-__device__ double3 vectorSub(double3 r1, double3 r2) {
+__device__ double3 vectorSub(float3 r1, float3 r2) {
 	double3 r3 = { r1.x - r2.x, r1.y - r2.y, r1.z - r2.z };
 	return r3;
 }
 
-__device__ double3 vectorCross(double3 r1, double3 r2) {
+__device__ double3 vectorCross(double3 r1, float3 r2) {
 	double3 r3 = { r1.y * r2.z - r1.z * r2.y,
 					r1.z * r2.x - r1.x * r2.z,
 					r1.x * r2.y - r1.y * r2.x };
@@ -84,8 +92,8 @@ __global__ void evaluateEmitter(int e, int startEmitter, GPUGeometry gpuEmitter,
 			}
 		}
 
-		double3 eNormal = gpuEmitter.normal[e];
-		double3 rNormal = gpuReceiver.normal[r];
+		float3 eNormal = gpuEmitter.normal[e];
+		float3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
 		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
 		double emitterNormalDotRay = vectorDot(eNormal, ray);
@@ -148,8 +156,8 @@ __global__ void evaluateEmitterSelfIntEmitter(int e, int startEmitter, GPUGeomet
 		// 	}
 		// }
 
-		double3 eNormal = gpuEmitter.normal[e];
-		double3 rNormal = gpuReceiver.normal[r];
+		float3 eNormal = gpuEmitter.normal[e];
+		float3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
 		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
 		double emitterNormalDotRay = vectorDot(eNormal, ray);
@@ -213,8 +221,8 @@ __global__ void evaluateEmitterSelfIntReceiver(int e, int startEmitter, GPUGeome
 			}
 		}
 
-		double3 eNormal = gpuEmitter.normal[e];
-		double3 rNormal = gpuReceiver.normal[r];
+		float3 eNormal = gpuEmitter.normal[e];
+		float3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
 		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
 		double emitterNormalDotRay = vectorDot(eNormal, ray);
@@ -276,8 +284,8 @@ __global__ void evaluateEmitterSelfIntBoth(int e, int startEmitter, GPUGeometry 
 			}
 		}
 
-		double3 eNormal = gpuEmitter.normal[e];
-		double3 rNormal = gpuReceiver.normal[r];
+		float3 eNormal = gpuEmitter.normal[e];
+		float3 rNormal = gpuReceiver.normal[r];
 		double emitterDenominator = vectorMagnitude(eNormal) * rayMagnitude;
 		double receiverDenominator = vectorMagnitude(rNormal) * rayMagnitude;
 		double emitterNormalDotRay = vectorDot(eNormal, ray);

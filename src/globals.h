@@ -35,6 +35,7 @@ using namespace std;
 // Standard CUDA blocksize; adjusting has no noticeable effect on runtime
 const static int BLOCKSIZE = 32;
 const static char SELFINT_ENV_VAR[10] = "SELF_INT";
+const static char BINARY_ENV_VAR[16] = "BINARY_MODE";
 const static double PI = 3.14159265358979311599796346854;
 
 // Time

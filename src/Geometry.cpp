@@ -8,6 +8,18 @@ Geometry::Geometry()
 Geometry::Geometry(STLReader &reader)
 {
 
+	// Check mode
+	char* binaryStr;
+	int binarySetting = 0;
+	bool binaryMode = false;
+	binaryStr = getenv(BINARY_ENV_VAR);
+	if (binaryStr != NULL) {
+		binarySetting = atoi(binaryStr);
+	}
+	if (binarySetting == 1) {
+		binaryMode = true;
+	}
+
 	// Open file
 	reader.openFile();
 	if (!reader.file.is_open())
@@ -15,13 +27,16 @@ Geometry::Geometry(STLReader &reader)
 		throw runtime_error(reader.filename);
 	}
 
-	int numFacets = reader.getNumFacets();
+	unsigned int numFacets = reader.getNumFacets(binaryMode);
 	initWithSize(numFacets);
 	reader.resetFile();
+	if (binaryMode) { reader.getToFacets(); }
+	
 
+	vector<float3> info(4);
 	for (int i = 0; i < numFacets; i++)
 	{
-		vector<double3> info = reader.getNextFacet();
+		reader.getNextFacet(binaryMode, info);
 		normal[i].x = info[0].x;
 		normal[i].y = info[0].y;
 		normal[i].z = info[0].z;
@@ -46,20 +61,20 @@ Geometry::Geometry(STLReader &reader)
 	}
 }
 
-void Geometry::initWithSize(int newSize)
+void Geometry::initWithSize(unsigned int newSize)
 {
 	arraySize = newSize;
-	normal = (double3 *)calloc(arraySize, sizeof(double3));
+	normal = (float3*)calloc(arraySize, sizeof(float3));
 
-	vertexA = (double3 *)calloc(arraySize, sizeof(double3));
+	vertexA = (float3*)calloc(arraySize, sizeof(float3));
 
-	edgeBA = (double3 *)calloc(arraySize, sizeof(double3));
+	edgeBA = (float3*)calloc(arraySize, sizeof(float3));
 
-	edgeCA = (double3 *)calloc(arraySize, sizeof(double3));
+	edgeCA = (float3*)calloc(arraySize, sizeof(float3));
 
-	center = (double3 *)calloc(arraySize, sizeof(double3));
+	center = (float3*)calloc(arraySize, sizeof(float3));
 
-	area = (double *)calloc(arraySize, sizeof(double3));
+	area = (double *)calloc(arraySize, sizeof(float3));
 }
 
 void Geometry::freeMemory()
@@ -77,7 +92,7 @@ void Geometry::freeMemory()
 	free(area);
 }
 
-double Geometry::areaOf(vector<double3> triangle)
+double Geometry::areaOf(vector<float3> triangle)
 {
 
 	double x1 = triangle[2].x - triangle[1].x;

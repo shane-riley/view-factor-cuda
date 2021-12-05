@@ -31,11 +31,15 @@ public:
 	void closeFile();
 
 	// Get total number of facets
-	int getNumFacets();
+	unsigned int getNumFacets();
+	unsigned int getNumFacets(bool binaryMode);
+
+	void getToFacets();
 
 	// Get next Facet (normal vector and 3 vertices)
 	// NOTE: Follows Aparapi format
-	vector<double3> getNextFacet();
+	void getNextFacet(float3 &coords);
+	void getNextFacet(bool binaryMode, vector<float3> &coords);
 };
 
 #endif  /* STL_READER_H_ */

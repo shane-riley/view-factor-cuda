@@ -52,7 +52,7 @@ double getVF(string ef, string rf, string bf) {
 	}
 	cout << "Files loaded." << endl;
 	msec tFiles = chrono::duration_cast<msec>(Time::now() - tStart);
-	cout << "File import Time [s]: " << setprecision(3) << (float) tFiles.count() / 1000.0 << endl;
+	cout << "File import Time [s]: " << setprecision(6) << (float) tFiles.count() / 1000.0 << endl;
 
 	int deviceCount;
 	cudaGetDeviceCount(&deviceCount);
@@ -126,7 +126,7 @@ double getVF(string ef, string rf, string bf) {
 	cout << "------------------------------------------" << endl;
 	cout << endl;
 	msec tEnd = chrono::duration_cast<msec>(Time::now() - tStart);
-	cout << "Total Time [s]: " << setprecision(3) << (float)tEnd.count() / 1000.0 << endl;
+	cout << "Total Time [s]: " << setprecision(6) << (float)tEnd.count() / 1000.0 << endl;
 	cout << "VF: " << setprecision(17) << vf << endl;
 	return vf;
 }

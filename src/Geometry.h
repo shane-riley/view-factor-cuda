@@ -16,15 +16,15 @@ public:
 	// NOTE: It might be possible to use std::vectors for these arrays and then copy them over--later problem
 	// size-length pointers
 
-	double3 *normal;
+	float3 *normal;
 
-	double3 *vertexA;
+	float3 *vertexA;
 
-	double3 *edgeBA;
+	float3 *edgeBA;
 
-	double3 *edgeCA;
+	float3 *edgeCA;
 
-	double3 *center;
+	float3 *center;
 
 	double *area;
 
@@ -37,13 +37,13 @@ public:
 	// Someday we will make a constructor that takes a TEGDefinition as an input
 
 	// initWithSize method (allocates all arrays as size-length and full of zeroes)
-	void initWithSize(int newSize);
+	void initWithSize(unsigned int newSize);
 
 	// freeMemory method (releases memory from allocation, will error if memory was never allocated in the first place)
 	void freeMemory();
 
 	// areaOf method (same as Aparapi)
-	static double areaOf(vector<double3> triangle);
+	static double areaOf(vector<float3> triangle);
 
 	// Total area
 	double totalArea();
