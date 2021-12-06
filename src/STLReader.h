@@ -15,8 +15,10 @@ public:
 	// File stream
 	ifstream file;
 
+	bool binaryMode;
+
 	// Constructor
-	STLReader(string ffilename);
+	STLReader(string ffilename, bool mode);
 
 	// Void constructor
 	STLReader();
@@ -32,14 +34,12 @@ public:
 
 	// Get total number of facets
 	unsigned int getNumFacets();
-	unsigned int getNumFacets(bool binaryMode);
 
 	void getToFacets();
 
 	// Get next Facet (normal vector and 3 vertices)
 	// NOTE: Follows Aparapi format
-	void getNextFacet(float3 &coords);
-	void getNextFacet(bool binaryMode, vector<float3> &coords);
+	void getNextFacet(vector<float3> &coords);
 };
 
 #endif  /* STL_READER_H_ */

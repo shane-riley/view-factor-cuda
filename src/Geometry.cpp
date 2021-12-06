@@ -8,17 +8,7 @@ Geometry::Geometry()
 Geometry::Geometry(STLReader &reader)
 {
 
-	// Check mode
-	char* binaryStr;
-	int binarySetting = 0;
-	bool binaryMode = false;
-	binaryStr = getenv(BINARY_ENV_VAR);
-	if (binaryStr != NULL) {
-		binarySetting = atoi(binaryStr);
-	}
-	if (binarySetting == 1) {
-		binaryMode = true;
-	}
+	
 
 	// Open file
 	reader.openFile();
@@ -27,16 +17,16 @@ Geometry::Geometry(STLReader &reader)
 		throw runtime_error(reader.filename);
 	}
 
-	unsigned int numFacets = reader.getNumFacets(binaryMode);
+	unsigned int numFacets = reader.getNumFacets();
 	initWithSize(numFacets);
 	reader.resetFile();
-	if (binaryMode) { reader.getToFacets(); }
+	if (reader.binaryMode) { reader.getToFacets(); }
 	
 
-	vector<float3> info(4);
 	for (int i = 0; i < numFacets; i++)
 	{
-		reader.getNextFacet(binaryMode, info);
+		vector<float3> info(4);
+		reader.getNextFacet(info);
 		normal[i].x = info[0].x;
 		normal[i].y = info[0].y;
 		normal[i].z = info[0].z;

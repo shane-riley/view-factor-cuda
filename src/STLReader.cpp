@@ -35,14 +35,20 @@ std::istream& safeGetline(std::istream& is, std::string& t)
     }
 }
 
-STLReader::STLReader(string ffilename) {
+STLReader::STLReader(string ffilename, bool mode) {
     filename = ffilename;
+    binaryMode = mode;
 }
 
 STLReader::STLReader() {}
 
 void STLReader::openFile() {
-    file.open(filename, ios::in);
+    if (binaryMode) {
+        file.open(filename, ios::binary);
+    }
+    else {
+        file.open(filename, ios::in);
+    }
 }
 
 void STLReader::resetFile() {
@@ -54,11 +60,8 @@ void STLReader::closeFile() {
     file.close();
 }
 
-unsigned int STLReader::getNumFacets() {
-    return getNumFacets(false);
-}
 
-unsigned int STLReader::getNumFacets(bool binaryMode) {
+unsigned int STLReader::getNumFacets() {
     
     if (binaryMode) {
 
@@ -102,21 +105,18 @@ void STLReader::getToFacets() {
     file.read(buffer, 84);
 }
 
-void STLReader::getNextFacet(float3 &coords) {
-    getNextFacet(coords);
-}
-
-void STLReader::getNextFacet(bool binaryMode, vector<float3> &coords) {
+void STLReader::getNextFacet(vector<float3> &coords) {
 	
     if (binaryMode) {
+        assert(file.good());
         for (int j = 0; j < 4; j++) {
             file.read(reinterpret_cast<char*>(&coords[j].x), 4);
             file.read(reinterpret_cast<char*>(&coords[j].y), 4);
             file.read(reinterpret_cast<char*>(&coords[j].z), 4);
         }
         // Skip two bytes
-        char buffer[3];
-        file.read(buffer, 2);
+        file.ignore(2);
+        return;
     }
     else {
 

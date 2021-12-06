@@ -18,6 +18,18 @@ double getVF(string ef, string rf, string bf) {
 	cout << "VFCUDA" << endl;
 	cout << endl;
 
+	// Check mode
+	char* binaryStr;
+	int binarySetting = 0;
+	bool binaryMode = false;
+	binaryStr = getenv(BINARY_ENV_VAR);
+	if (binaryStr != NULL) {
+		binarySetting = atoi(binaryStr);
+	}
+	if (binarySetting == 1) {
+		binaryMode = true;
+	}
+
 	auto tStart = Time::now();
 
 	cout << "Input files:" << endl;
@@ -25,11 +37,11 @@ double getVF(string ef, string rf, string bf) {
 	cout << "Receiver: " << rf << endl;
 	if (do_blocker) cout << "Blocker: " << bf << endl;
 
-	STLReader emitterReader(ef);
-	STLReader receiverReader(rf);
+	STLReader emitterReader(ef, binaryMode);
+	STLReader receiverReader(rf, binaryMode);
 
 	STLReader blockerReader;
-	if (do_blocker) blockerReader = STLReader(bf);
+	if (do_blocker) blockerReader = STLReader(bf, binaryMode);
 
 	Geometry emitterGeometry;
 	Geometry receiverGeometry;
