@@ -2,6 +2,7 @@
 #include "kernels.cuh"
 
 MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry& cpuBlocker, int ddeviceNum, int emitterBegin, int emitterEnd) {
+	auto tStart = Time::now();
 	cudaSetDevice(ddeviceNum);
 	gpuEmitter = GPUGeometry(cpuEmitter);
 	gpuReceiver = GPUGeometry(cpuReceiver);
@@ -12,6 +13,10 @@ MTCalculator::MTCalculator(Geometry& cpuEmitter, Geometry& cpuReceiver, Geometry
 
 	int numResults = gpuReceiver.arraySize;
 	checkCudaErrors(cudaMalloc((void**)&result, numResults * sizeof(double)));
+	auto tGPUDone = Time::now();
+
+	msec tGPU = chrono::duration_cast<msec>(tGPUDone - tStart);
+	cout << "Thread " << deviceNum << " Copy Time [s]: " << setprecision(6) << (float)tGPU.count() / 1000.0 << endl;
 }
 
 void MTCalculator::freeMemory() {
@@ -85,7 +90,7 @@ double MTCalculator::calculateVF() {
 	}
 	free(cpuResult);
 
-	cout << "Thread " << deviceNum << " Time [s]: " << setprecision(6) << (float) tGPU.count()/1000.0 << endl;
+	cout << "Thread " << deviceNum << " Solver Time [s]: " << setprecision(6) << (float) tGPU.count()/1000.0 << endl;
 
 	// Return sum
 	return cpuTotal;

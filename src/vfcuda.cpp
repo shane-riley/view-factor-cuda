@@ -29,6 +29,9 @@ double getVF(string ef, string rf, string bf) {
 	if (binarySetting == 1) {
 		binaryMode = true;
 	}
+	cout << "STL Reading mode: " << (binaryMode ? "BINARY" : "ASCII") << endl;
+
+
 
 	auto tStart = Time::now();
 
